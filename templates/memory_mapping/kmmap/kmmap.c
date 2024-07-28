@@ -50,7 +50,7 @@ static int my_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-static ssize_t my_read(struct file *file, char __user *user_buffer,
+static int my_read(struct file *file, char __user *user_buffer,
 		size_t size, loff_t *offset)
 {
 	/* check size doesn't exceed our mapped area size */
@@ -64,7 +64,7 @@ static ssize_t my_read(struct file *file, char __user *user_buffer,
 	return size;
 }
 
-static ssize_t my_write(struct file *file, const char __user *user_buffer,
+static int my_write(struct file *file, const char __user *user_buffer,
 		size_t size, loff_t *offset)
 {
 	/* check size doesn't exceed our mapped area size */

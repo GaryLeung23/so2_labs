@@ -37,7 +37,7 @@ static int my_close(struct inode *inode, struct file *file) {
     return 0;
 }
 
-static ssize_t my_read(struct file *file, char __user *user_buffer, size_t size, loff_t *offset) {
+static int my_read(struct file *file, char __user *user_buffer, size_t size, loff_t *offset) {
     struct my_device_data *my_data =
              (struct my_device_data*) file->private_data;
 	int sizeRead = 0;		 
@@ -50,7 +50,7 @@ static ssize_t my_read(struct file *file, char __user *user_buffer, size_t size,
     return sizeRead;
 }
 
-static ssize_t my_write(struct file *file, const char __user *user_buffer, size_t size, loff_t *offset) {
+static int my_write(struct file *file, const char __user *user_buffer, size_t size, loff_t *offset) {
     struct my_device_data *my_data =
              (struct my_device_data*) file->private_data;
 	int sizeWritten = 0;		 
