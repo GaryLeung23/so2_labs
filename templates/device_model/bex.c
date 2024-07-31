@@ -13,10 +13,11 @@ MODULE_DESCRIPTION ("BEX bus module");
 
 static int bex_match(struct device *dev, struct device_driver *driver)
 {
-	/* TODO 5/5: implement the bus match function */
+	/* implement the bus match function */
 	struct bex_device *bex_dev = to_bex_device(dev);
 	struct bex_driver *bex_drv = to_bex_driver(driver);
 
+	// compare type
 	if (!strcmp(bex_dev->type, bex_drv->type))
 		return 1;
 
@@ -28,6 +29,7 @@ static int bex_probe(struct device *dev)
 	struct bex_device *bex_dev = to_bex_device(dev);
 	struct bex_driver *bex_drv = to_bex_driver(dev->driver);
 
+	// call driver's probe
 	return bex_drv->probe(bex_dev);
 }
 
@@ -36,13 +38,14 @@ static int bex_remove(struct device *dev)
 	struct bex_device *bex_dev = to_bex_device(dev);
 	struct bex_driver *bex_drv = to_bex_driver(dev->driver);
 
+	// call driver's remove
 	bex_drv->remove(bex_dev);
 	return 0;
 }
 
 static int bex_add_dev(const char *name, const char *type, int version);
 
-/* TODO 3/14: implement write only add attribute */
+/* implement write only add attribute */
 static ssize_t
 add_store(struct bus_type *bt, const char *buf, size_t count)
 {
@@ -56,11 +59,11 @@ add_store(struct bus_type *bt, const char *buf, size_t count)
 
 	return bex_add_dev(name, type, version) ? : count;
 }
-BUS_ATTR(add, S_IWUSR, NULL, add_store);
+BUS_ATTR_WO(add);
 
 static int bex_del_dev(const char *name);
 
-/* TODO 3/13: implement write only del attribute */
+/* implement write only del attribute */
 static ssize_t
 del_store(struct bus_type *bt, const char *buf, size_t count)
 {
@@ -73,10 +76,10 @@ del_store(struct bus_type *bt, const char *buf, size_t count)
 	return bex_del_dev(name) ? 0 : count;
 
 }
-BUS_ATTR(del, S_IWUSR, NULL, del_store);
+BUS_ATTR_WO(del);
 
 static struct attribute *bex_bus_attrs[] = {
-	/* TODO 3/2: add del and add attributes */
+	/* add del and add attributes */
 	&bus_attr_add.attr,
 	&bus_attr_del.attr,
 	NULL
@@ -88,11 +91,11 @@ struct bus_type bex_bus_type = {
 	.match	= bex_match,
 	.probe  = bex_probe,
 	.remove  = bex_remove,
-	/* TODO 3: add bus groups attributes */
+	/* add bus groups attributes */
 	.bus_groups = bex_bus_groups,
 };
 
-/*TODO 2/8: add read-only device attribute to show the type */
+/* add read-only device attribute to show the type */
 static ssize_t
 type_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -100,9 +103,10 @@ type_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 	return sprintf(buf, "%s\n", bex_dev->type);
 }
+/* 定义单个属性 dev_attr_type*/
 DEVICE_ATTR_RO(type);
 
-/*TODO 2/8: add read-only device attribute to show the version */
+/* add read-only device attribute to show the version */
 static ssize_t
 version_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -110,18 +114,23 @@ version_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 	return sprintf(buf, "%d\n", bex_dev->version);
 }
+/* 定义单个属性 dev_attr_version*/
 DEVICE_ATTR_RO(version);
 
 static struct attribute *bex_dev_attrs[] = {
-	/* TODO 2/2: add type and version attributes */
+	/* add type and version attributes */
 	&dev_attr_type.attr,
 	&dev_attr_version.attr,
 	NULL
 };
+
+/* 该宏定义了 bex_dev_groups,并且设置bex_dev_group中的attr字段为bex_dev_attrs*/
 ATTRIBUTE_GROUPS(bex_dev);
 
+/* 处理uevent */
 static int bex_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
+	/* 为用户空间设置系统变量 */
 	return add_uevent_var(env, "MODALIAS=bex:%s", dev_name(dev));
 }
 
@@ -134,7 +143,7 @@ static void bex_dev_release(struct device *dev)
 }
 
 struct device_type bex_device_type = {
-	/* TODO 2: set the device groups attributes */
+	/* set the device groups attributes */
 	.groups = bex_dev_groups,
 	.uevent	= bex_dev_uevent,
 	.release = bex_dev_release,
@@ -148,10 +157,13 @@ static int bex_add_dev(const char *name, const char *type, int version)
 	if (!bex_dev)
 		return -ENOMEM;
 
+	/* kstrdup会分配内存  */
 	bex_dev->type = kstrdup(type, GFP_KERNEL);
 	bex_dev->version = version;
 
+	// Associated Bus
 	bex_dev->dev.bus = &bex_bus_type;
+	// set device_type
 	bex_dev->dev.type = &bex_device_type;
 	bex_dev->dev.parent = NULL;
 
@@ -197,14 +209,14 @@ static int __init my_bus_init (void)
 {
 	int ret;
 
-	/* TODO 1/5: register the bus driver */
+	/* register the bus driver */
 	ret = bus_register(&bex_bus_type);
 	if (ret < 0) {
 		pr_err("Unable to register bus\n");
 		return ret;
 	}
 
-	/* TODO 1: add a device */
+	/* add a device */
 	bex_add_dev("root", "none", 1);
 
 	return 0;
@@ -212,8 +224,10 @@ static int __init my_bus_init (void)
 
 static void my_bus_exit (void)
 {
-	/* TODO 1: unregister the bus driver */
+	bex_del_dev("root");
+	/* unregister the bus driver */
 	bus_unregister(&bex_bus_type);
+
 }
 
 module_init (my_bus_init);

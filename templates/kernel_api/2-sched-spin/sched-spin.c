@@ -19,14 +19,14 @@ static int sched_spin_init(void)
 
 	spin_lock_init(&lock);
 
-	/* TODO 0/1: Use spin_lock to aquire the lock */
+	/* Use spin_lock to aquire the lock */
 	spin_lock(&lock);
 
 	set_current_state(TASK_INTERRUPTIBLE);
 	/* Try to sleep for 5 seconds. */
 	schedule_timeout(5 * HZ);
 
-	/* TODO 0/1: Use spin_unlock to release the lock */
+	/* Use spin_unlock to release the lock */
 	spin_unlock(&lock);
 
 	return 0;

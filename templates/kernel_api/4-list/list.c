@@ -41,7 +41,7 @@ static void task_info_add_to_list(int pid)
 {
 	struct task_info *ti;
 
-	/* TODO 1/2: Allocate task_info and add it to list */
+	/* Allocate task_info and add it to list */
 	ti = task_info_alloc(pid);
 	list_add(&ti->list, &head);
 }
@@ -73,7 +73,7 @@ static void task_info_purge_list(void)
 	struct list_head *p, *q;
 	struct task_info *ti;
 
-	/* TODO 2/5: Iterate over the list and delete all elements */
+	/* Iterate over the list and delete all elements */
 	list_for_each_safe(p, q, &head) {
 		ti = list_entry(p, struct task_info, list);
 		list_del(p);

@@ -15,7 +15,7 @@ MODULE_AUTHOR("SO2");
 MODULE_LICENSE("GPL");
 
 static const struct of_device_id simple_device_ids[] = {
-	/* TODO 2/2: Add compatible strings */
+	/* Add compatible strings */
 	{ .compatible = "so2,simple-device-v1"},
 	{ .compatible = "so2,simple-device-v2"},
 	{ /* sentinel */}
@@ -48,7 +48,7 @@ static int simple_init(void)
 {
 	pr_info("Simple driver init!\n");
 	
-	/* TODO 1/0: Notice simple_driver definition */
+	/* Notice simple_driver definition */
 	return platform_driver_register(&simple_driver);
 }
 

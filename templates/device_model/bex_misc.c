@@ -80,7 +80,7 @@ int bex_misc_probe(struct bex_device *dev)
 
 	dev_info(&dev->dev, "%s: %s %d\n", __func__, dev->type, dev->version);
 
-	/* TODO 6/4: refuse the probe is version > 1 */
+	/* refuse the probe is version > 1 */
 	if (dev->version > 1) {
 		dev_info(&dev->dev, "unknown version: %d\n", dev->version);
 		return -ENODEV;
@@ -94,11 +94,13 @@ int bex_misc_probe(struct bex_device *dev)
 	snprintf(buf, sizeof(buf), "bex-misc-%d", bex_misc_count++);
 	bmd->misc.name = kstrdup(buf, GFP_KERNEL);
 	bmd->misc.parent = &dev->dev;
+	/* set fops */
 	bmd->misc.fops = &bex_misc_fops;
 	bmd->dev = dev;
+	/* set private data */
 	dev_set_drvdata(&dev->dev, bmd);
 
-	/* TODO 6/5: register the misc device */
+	/* register the misc device */
 	ret = misc_register(&bmd->misc);
 	if (ret) {
 		dev_err(&dev->dev, "failed to register misc device: %d\n", ret);
@@ -114,8 +116,9 @@ void bex_misc_remove(struct bex_device *dev)
 
 	bmd = (struct bex_misc_device *)dev_get_drvdata(&dev->dev);
 
-	/* TODO 6: deregister the misc device */
+	/* deregister the misc device */
 	misc_deregister(&bmd->misc);
+	kfree(bmd->misc.name);
 	kfree(bmd);
 }
 
@@ -133,7 +136,7 @@ static int my_init(void)
 {
 	int err;
 
-	/* TODO 4/5: register the driver */
+	/* register the driver */
 	err = bex_register_driver(&bex_misc_driver);
 	if(err) {
 		pr_err("unable to register driver: %d\n", err);
@@ -145,7 +148,7 @@ static int my_init(void)
 
 static void my_exit(void)
 {
-	/* TODO 4: unregister the driver */
+	/* unregister the driver */
 	bex_unregister_driver(&bex_misc_driver);
 }
 

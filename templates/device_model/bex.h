@@ -9,7 +9,7 @@ struct bex_device {
 	struct device dev;
 };
 
-#define to_bex_device(drv) container_of(dev, struct bex_device, dev)
+#define to_bex_device(mdev) container_of(mdev, struct bex_device, dev)
 
 struct bex_driver {
 	const char *type;
